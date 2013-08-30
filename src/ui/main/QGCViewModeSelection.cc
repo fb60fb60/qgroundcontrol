@@ -1,6 +1,7 @@
 #include "QGCViewModeSelection.h"
 #include "ui_QGCViewModeSelection.h"
 #include "QGC.h"
+#include <QMessageBox>
 #include "MainWindow.h"
 
 QGCViewModeSelection::QGCViewModeSelection(QWidget *parent) :
@@ -48,7 +49,15 @@ void QGCViewModeSelection::selectPX4() {
 }
 
 void QGCViewModeSelection::selectAPM() {
-    emit customViewModeSelected(MainWindow::CUSTOM_MODE_APM);
-    mode = MainWindow::CUSTOM_MODE_APM;
-    selected = true;
+
+    QMessageBox msgBox;
+    msgBox.setText(tr("Not yet released"));
+    msgBox.setInformativeText(tr("The new special mode for APM has not been released, but is available in the codebase."));
+    msgBox.setStandardButtons(QMessageBox::Ok);
+    msgBox.setDefaultButton(QMessageBox::Ok);
+    (void)msgBox.exec();
+
+    //emit customViewModeSelected(MainWindow::CUSTOM_MODE_APM);
+    //mode = MainWindow::CUSTOM_MODE_APM;
+    //selected = true;
 }
