@@ -892,7 +892,7 @@ OTHER_FILES += \
 
 #sources.files       += ApmToolBar.qml
 #sources.path        += $$DESTDIR/qml
-#target.path         += qgroundcontrol
-#INSTALLS            += sources target
+target.path         += /usr/bin/qgroundcontrol
+INSTALLS            += target
 
 message( BASEDIR $$BASEDIR DESTDIR $$DESTDIR TARGET $$TARGET TARGETDIR $$TARGETDIR)
