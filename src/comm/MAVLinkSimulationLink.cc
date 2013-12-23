@@ -1000,72 +1000,18 @@ QString MAVLinkSimulationLink::getName() const
     return name;
 }
 
-qint64 MAVLinkSimulationLink::getNominalDataRate() const
+qint64 MAVLinkSimulationLink::getConnectionSpeed() const
 {
     /* 100 Mbit is reasonable fast and sufficient for all embedded applications */
     return 100000000;
 }
 
-qint64 MAVLinkSimulationLink::getTotalUpstream()
-{
-    return 0;
-    //TODO Add functionality here
-    // @todo Add functionality here
-}
-
-qint64 MAVLinkSimulationLink::getShortTermUpstream()
+qint64 MAVLinkSimulationLink::getCurrentInDataRate() const
 {
     return 0;
 }
 
-qint64 MAVLinkSimulationLink::getCurrentUpstream()
+qint64 MAVLinkSimulationLink::getCurrentOutDataRate() const
 {
     return 0;
-}
-
-qint64 MAVLinkSimulationLink::getMaxUpstream()
-{
-    return 0;
-}
-
-qint64 MAVLinkSimulationLink::getBitsSent() const
-{
-    return 0;
-}
-
-qint64 MAVLinkSimulationLink::getBitsReceived() const
-{
-    return 0;
-}
-
-qint64 MAVLinkSimulationLink::getTotalDownstream()
-{
-    return 0;
-}
-
-qint64 MAVLinkSimulationLink::getShortTermDownstream()
-{
-    return 0;
-}
-
-qint64 MAVLinkSimulationLink::getCurrentDownstream()
-{
-    return 0;
-}
-
-qint64 MAVLinkSimulationLink::getMaxDownstream()
-{
-    return 0;
-}
-
-bool MAVLinkSimulationLink::isFullDuplex() const
-{
-    /* Full duplex is no problem when running in pure software, but this is a serial simulation */
-    return false;
-}
-
-int MAVLinkSimulationLink::getLinkQuality() const
-{
-    /* The Link quality is always perfect when running in software */
-    return 100;
 }

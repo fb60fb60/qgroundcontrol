@@ -32,8 +32,15 @@ QT += network \
     sql \
     declarative
 
-TEMPLATE = app
-TARGET = qgroundcontrol
+# Setting this variable allows you to include this .pro file in another such that
+# you can set your own TARGET and main() function. This is used by the unit test
+# build files to build unit test using all built parts of QGCS except for main.
+isEmpty(QGCS_UNITTEST_OVERRIDE) {
+    TEMPLATE = app
+    TARGET = qgroundcontrol
+    SOURCES += src/main.cc
+}
+
 BASEDIR = $${IN_PWD}
 linux-g++|linux-g++-64{
     debug {
@@ -227,6 +234,7 @@ FORMS += src/ui/MainWindow.ui \
     src/ui/QGCMAVLinkLogPlayer.ui \
     src/ui/QGCWaypointListMulti.ui \
     src/ui/QGCUDPLinkConfiguration.ui \
+    src/ui/QGCTCPLinkConfiguration.ui \
     src/ui/QGCSettingsWidget.ui \
     src/ui/UASControlParameters.ui \
     src/ui/map/QGCMapTool.ui \
@@ -352,6 +360,7 @@ HEADERS += src/MG.h \
     src/ui/CameraView.h \
     src/comm/MAVLinkSimulationLink.h \
     src/comm/UDPLink.h \
+    src/comm/TCPLink.h \
     src/ui/ParameterInterface.h \
     src/ui/WaypointList.h \
     src/Waypoint.h \
@@ -407,6 +416,7 @@ HEADERS += src/MG.h \
     src/uas/QGCMAVLinkUASFactory.h \
     src/ui/QGCWaypointListMulti.h \
     src/ui/QGCUDPLinkConfiguration.h \
+    src/ui/QGCTCPLinkConfiguration.h \
     src/ui/QGCSettingsWidget.h \
     src/ui/uas/UASControlParameters.h \
     src/uas/QGCUASParamManager.h \
@@ -553,7 +563,7 @@ contains(DEPENDENCIES_PRESENT, libfreenect) {
     # Enable only if libfreenect is available
     HEADERS += src/input/Freenect.h
 }
-SOURCES += src/main.cc \
+SOURCES += \
     src/QGCCore.cc \
     src/uas/UASManager.cc \
     src/uas/UAS.cc \
@@ -578,6 +588,7 @@ SOURCES += src/main.cc \
     src/ui/CameraView.cc \
     src/comm/MAVLinkSimulationLink.cc \
     src/comm/UDPLink.cc \
+    src/comm/TCPLink.cc \
     src/ui/ParameterInterface.cc \
     src/ui/WaypointList.cc \
     src/Waypoint.cc \
@@ -632,6 +643,7 @@ SOURCES += src/main.cc \
     src/uas/QGCMAVLinkUASFactory.cc \
     src/ui/QGCWaypointListMulti.cc \
     src/ui/QGCUDPLinkConfiguration.cc \
+    src/ui/QGCTCPLinkConfiguration.cc \
     src/ui/QGCSettingsWidget.cc \
     src/ui/uas/UASControlParameters.cpp \
     src/uas/QGCUASParamManager.cc \
