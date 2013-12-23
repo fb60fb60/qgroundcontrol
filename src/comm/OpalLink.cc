@@ -496,63 +496,18 @@ bool OpalLink::disconnect()
     return true;
 }
 
-
-
-
-/*
- *
-  Statisctics
- *
- */
-
-qint64 OpalLink::getNominalDataRate() const
+// Data rate functions
+qint64 OpalLink::getConnectionSpeed() const
 {
     return 0; //unknown
 }
 
-int OpalLink::getLinkQuality() const
+qint64 OpalLink::getCurrentInDataRate() const
 {
-    return -1; //not supported
+    return 0;
 }
 
-qint64 OpalLink::getTotalUpstream()
+qint64 OpalLink::getCurrentOutDataRate() const
 {
-    statisticsMutex.lock();
-    qint64 totalUpstream =  bitsSentTotal / ((MG::TIME::getGroundTimeNow() - connectionStartTime) / 1000);
-    statisticsMutex.unlock();
-    return totalUpstream;
-}
-
-qint64 OpalLink::getTotalDownstream()
-{
-    statisticsMutex.lock();
-    qint64 totalDownstream = bitsReceivedTotal / ((MG::TIME::getGroundTimeNow() - connectionStartTime) / 1000);
-    statisticsMutex.unlock();
-    return totalDownstream;
-}
-
-qint64 OpalLink::getCurrentUpstream()
-{
-    return 0; //unknown
-}
-
-qint64 OpalLink::getMaxUpstream()
-{
-    return 0; //unknown
-}
-
-qint64 OpalLink::getBitsSent() const
-{
-    return bitsSentTotal;
-}
-
-qint64 OpalLink::getBitsReceived() const
-{
-    return bitsReceivedTotal;
-}
-
-
-bool OpalLink::isFullDuplex() const
-{
-    return false;
+    return 0;
 }

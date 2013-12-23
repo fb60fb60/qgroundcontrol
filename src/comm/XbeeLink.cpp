@@ -119,44 +119,19 @@ bool XbeeLink::isConnected() const
 	return this->m_connected;
 }
 
-qint64 XbeeLink::getNominalDataRate() const
+qint64 XbeeLink::getConnectionSpeed() const
 {
 	return this->m_baudRate;
 }
 
-bool XbeeLink::isFullDuplex() const
+qint64 XbeeLink::getCurrentInDataRate() const
 {
-	return false;
+    return 0;
 }
 
-int XbeeLink::getLinkQuality() const
+qint64 XbeeLink::getCurrentOutDataRate() const
 {
-	return -1; // TO DO:
-}
-
-qint64 XbeeLink::getTotalUpstream()
-{
-	return 0; // TO DO:
-}
-
-qint64 XbeeLink::getCurrentUpstream()
-{
-	return 0; // TO DO:
-}
-
-qint64 XbeeLink::getMaxUpstream()
-{
-	return 0; // TO DO:
-}
-
-qint64 XbeeLink::getBitsSent() const
-{
-	return 0; // TO DO:
-}
-
-qint64 XbeeLink::getBitsReceived() const
-{
-	return 0; // TO DO:
+    return 0;
 }
 
 bool XbeeLink::hardwareConnect()

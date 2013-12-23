@@ -73,94 +73,35 @@ public:
     /* Connection characteristics */
 
     /**
-     * @Brief Get the nominal data rate of the interface.
+     * @Brief Get the maximum connection speed for this interface.
      *
      * The nominal data rate is the theoretical maximum data rate of the
      * interface. For 100Base-T Ethernet this would be 100 Mbit/s (100'000'000
      * Bit/s, NOT 104'857'600 Bit/s).
      *
      * @return The nominal data rate of the interface in bit per second, 0 if unknown
-     * @see getLongTermDataRate() For the mean data rate
-     * @see getShortTermDataRate() For a the mean data rate of the last seconds
-     * @see getCurrentDataRate() For the data rate of the last transferred chunk
-     * @see getMaxDataRate() For the maximum data rate
      **/
-    virtual qint64 getNominalDataRate() const = 0;
+    virtual qint64 getConnectionSpeed() const = 0;
 
     /**
-     * @brief Full duplex support of this interface.
+     * @Brief Get the current incoming data rate.
      *
-     * This method returns true if the interface supports full duplex, which implies
-     * the full datarate when sending and receiving data simultaneously.
+     * This should be over a short timespan, something like 100ms. A precise value isn't necessary,
+     * and this can be filtered, but should be a reasonable estimate of current data rate.
      *
-     * @return True if the interface supports full duplex, false otherwise
+     * @return The data rate of the interface in bits per second, 0 if unknown
      **/
-    virtual bool isFullDuplex() const = 0;
+    virtual qint64 getCurrentInDataRate() const = 0;
 
     /**
-     * @brief Get the link quality.
+     * @Brief Get the current outgoing data rate.
      *
-     * The link quality is reported as percent, on a scale from 0 to 100% in 1% increments.
-     * If this feature is not supported by the interface, a call to this method return -1.
+     * This should be over a short timespan, something like 100ms. A precise value isn't necessary,
+     * and this can be filtered, but should be a reasonable estimate of current data rate.
      *
-     * @return The link quality in integer percent or -1 if not supported
+     * @return The data rate of the interface in bits per second, 0 if unknown
      **/
-    virtual int getLinkQuality() const = 0;
-
-    /**
-     * @Brief Get the long term (complete) mean of the data rate
-     *
-     * The mean of the total data rate. It is calculated as
-     * all transferred bits / total link uptime.
-     *
-     * @return The mean data rate of the interface in bit per second, 0 if unknown
-     * @see getNominalDataRate() For the nominal data rate of the interface
-     * @see getShortTermDataRate() For a the mean data rate of the last seconds
-     * @see getCurrentDataRate() For the data rate of the last transferred chunk
-     * @see getMaxDataRate() For the maximum data rate
-     **/
-    virtual qint64 getTotalUpstream() = 0;
-
-    /**
-     * @Brief Get the current data rate
-     *
-     * The datarate of the last 100 ms
-     *
-     * @return The mean data rate of the interface in bit per second, 0 if unknown
-     * @see getNominalDataRate() For the nominal data rate of the interface
-     * @see getLongTermDataRate() For the mean data rate
-     * @see getShortTermDataRate() For a the mean data rate of the last seconds
-     * @see getMaxDataRate() For the maximum data rate
-     **/
-    virtual qint64 getCurrentUpstream() = 0;
-
-    /**
-     * @Brief Get the maximum data rate
-     *
-     * The maximum peak data rate.
-     *
-     * @return The mean data rate of the interface in bit per second, 0 if unknown
-     * @see getNominalDataRate() For the nominal data rate of the interface
-     * @see getLongTermDataRate() For the mean data rate
-     * @see getShortTermDataRate() For a the mean data rate of the last seconds
-     * @see getCurrentDataRate() For the data rate of the last transferred chunk
-     **/
-    virtual qint64 getMaxUpstream() = 0;
-
-    /**
-     * @Brief Get the total number of bits sent
-     *
-     * @return The number of sent bits
-     **/
-    virtual qint64 getBitsSent() const = 0;
-
-    /**
-     * @Brief Get the total number of bits received
-     *
-     * @return The number of received bits
-     * @bug Decide if the bits should be counted fromt the instantiation of the interface or if the counter should reset on disconnect.
-     **/
-    virtual qint64 getBitsReceived() const = 0;
+    virtual qint64 getCurrentOutDataRate() const = 0;
 
     /**
      * @brief Connect this interface logically
