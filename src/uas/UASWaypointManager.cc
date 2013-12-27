@@ -225,7 +225,7 @@ void UASWaypointManager::handleWaypointAck(quint8 systemId, quint8 compId, mavli
             current_state = WP_IDLE;
             readWaypoints(false); //Update "Onboard Waypoints"-tab immidiately after the waypoint list has been sent.
             emit updateStatusString("done.");
-        } else if((current_state == WP_SENDLIST || current_state == WP_SENDLIST_SENDWPS)) {
+        } else if((current_state == WP_SENDLIST || current_state == WP_SENDLIST_SENDWPS) && wpa->type != 0) {
             //give up transmitting if a WP is rejected
             if (wpa->type == 1) {
                 emit updateStatusString("upload failed: general error");
