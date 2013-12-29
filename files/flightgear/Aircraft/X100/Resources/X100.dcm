@@ -1,0 +1,96 @@
+DIM M
+DERIV RAD
+PART
+DAMP              
+
+ $FLTCON WT=20., 
+     LOOP=2.0, 
+     NMACH=1.0, MACH(1)=0.04,
+     NALT=1.0,  ALT(1)=300.,
+     NALPHA=18.0,
+     ALSCHD(1)= -10.0, -8.0, -6.0, -4.0, -2.0, -1.0, 0.0, 1.0, 2.0, 3.0,
+         4.0, 6.0, 8.0, 10.0, 12.0, 14.0, 16.0, 18.0,
+     STMACH=0.7, TSMACH=1.4, TR=1.0$
+
+ $OPTINS ROUGFC=0.25E-3, SREF=0.23$
+# $OPTINS CBARR=.75, BLREF=12.
+
+ $SYNTHS XCG= -0.094, ZCG= 0.0,
+         XW=-0.148,ZW= 0., ALIW=2.0,
+         SCALE=1.0, VERTUP=.TRUE.$ 
+
+ $BODY NX=11.0,
+       X(1) = -0.240524, -0.237163, -0.224721, -0.204851, -0.153445, -0.0335,
+               0.119279, 0.161821, 0.228859, 0.255747, 0.328497, 
+       R(1) =  0.001727, 0.026745, 0.047114, 0.064826, 0.087071, 0.087071,
+               0.078101, 0.065475, 0.042027, 0.029701, 0.017676, 
+       ZU(1)=  0.001549, 0.009944, 0.018098, 0.028861, 0.041115, 0.048897,
+               0.037352, 0.032379, 0.026302, 0.029985, 0.018015, 
+       ZL(1)= -0.000722, -0.009117, -0.017271, -0.028034, -0.040287,-0.04807,
+              -0.037461, -0.034698, -0.030831, -0.028989, -0.017019, 
+       S(1) =  0.000006, 0.00078, 0.002551, 0.005646, 0.010849, 0.012924,
+               0.008944, 0.006723, 0.003675, 0.002681, 0.000948, 
+       P(1) =  0.00903, 0.119709, 0.212845, 0.302332, 0.412081, 0.431743,
+               0.37183, 0.317159, 0.22236, 0.184755, 0.109854,
+       ITYPE=2.0, METHOD=1.0$  
+
+ $WGPLNF CHRDR=0.216,  CHRDTP=.164,
+         SSPN=0.5,  SSPNE=0.42,
+         SAVSI=26.,
+         CHSTAT=0.0, TWISTA=0.0,
+         DHDADI=0.,
+         TYPE=1.0$
+                
+NACA W 4 2412
+
+
+ $ASYFLP STYPE=4.0, NDELTA=9.0,
+         DELTAL(1)=-32.0,-20.0,-10.0,-5.0,0.0, 5.0, 10.0, 20.0, 32.0,
+         DELTAR(1)= 32.0, 20.0, 10.0, 5.0,0.0,-5.0,-10.0,-20.0,-32.0,
+         CHRDFI=.15, CHRDFO=0.35,
+         SPANFI=.2, SPANFO=.5$
+
+************************************
+*     Twin Vertical Panel parameters
+************************************
+*   BVP     Vertical panel span above lifting surface
+*   BV      Vertical panel span
+*   BDV     Fuselage depth at quarter chord point of vertical
+*           panel mean aerodynamic chord
+*   BH      Distance between vertical panels
+*   SV      Plan form area of one vertical panel
+*   VPHITE  Total training edge angle of vertical panel airfoil section
+*   VLP     Distance parallel to long. axis bewteen the C.G. and the
+*           quarter chord point of the MAC of the panel, positive 
+*           if aft of C.G.
+*   ZP      Distance in the Z direction between the C.G. and the MAC
+*           of the panel, positive for panel above C.G.
+# $TVTPAN BVP=0.06, BV=.075, BDV=0.01, BH=1.0,
+#         SV=0.01,VLP=0.17,ZP=0.017$
+
+*****************************************************
+*   Propulsion parameters for Propeller Power Effects
+*****************************************************
+*   AIETLP  Angle of incidence of engine thrust axis, deg
+*   NENGSP  Number of engines (1 or 2 only)
+*   THSTCP  Thrust coefficient 2T/PV^2 Sref
+*   PHALOC  Axial location of propeller hub
+*   PHVLOC  Vertical location of propeller hub
+*   PRPRAD  Propeller radius
+*   ENGFCT  Empirical normal force factor
+*           Not required if blade widths are input.
+*   BWAPR3  Blade width at 0.3 propeller radius
+*           Not required if empirical normal force factor is input.
+*   BWAPR6  Blade width at 0.6 propeller radius
+*           Not required if empirical normal force factor is input.
+*   BWAPR9  Blade width at 0.9 propeller radius
+*           Not required if empirical normal force factor is input.
+*   NOPBPE  Number of propeller blades per engine
+*   BAPR75  Blade angle at 0.75 propeller radius
+*   YP      Lateral location of engine
+*   CROT    .true.  Counter rotation propeller, 
+*           .false. Non counter rotating
+*
+
+ $PROPWR NENGSP=1., PHALOC=0.27, PHVLOC=0.0, PRPRAD=0.2, ENGFCT=0.5$ 
+ 

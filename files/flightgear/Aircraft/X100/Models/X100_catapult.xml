@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<PropertyList>
+
+	<path>X100_catapult.ac</path>
+	
+	<animation>
+		<type>translate</type>
+		<object-name>buggy</object-name>
+		<property>/sim/model/X100/launch-pad/position-norm</property>
+		<factor>2.5</factor>
+		<axis>
+			<x>-1</x>
+		</axis>
+	</animation>
+	
+	<animation>
+		<type>shader</type>
+		<shader>chrome</shader>
+		<texture>chrome.png</texture>
+		<object-name>catapult</object-name>
+	</animation>
+
+</PropertyList>
