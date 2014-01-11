@@ -109,7 +109,7 @@ public:
         return z;
     }
     int getTurns() const {
-        return param2;
+        return param1;
     }
     MAV_FRAME getFrame() const {
         return frame;
