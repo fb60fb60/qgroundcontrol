@@ -1,0 +1,4 @@
+<?xml version="1.0"?> 
+<electric_engine name="X100_engine">
+	<power unit="WATTS"> 320 </power> <!-- extremely high, as the FDM is unrealistic -->
+</electric_engine>

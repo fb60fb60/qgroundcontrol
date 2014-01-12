@@ -1,0 +1,112 @@
+<?xml version="1.0"?>
+
+<PropertyList>
+	<sim>
+		<description>Gatewing X100</description>
+		<author>Gijs de Rooy</author>
+		<status>Alpha</status>
+		<rating>
+			<FDM type="int">2</FDM>
+			<systems type="int">2</systems>
+			<cockpit type="int">0</cockpit>
+			<model type="int">3</model>
+		</rating>
+		<version>20120314</version>
+
+		<!-- <flight-model>ufo</flight-model> -->
+		<flight-model>jsb</flight-model>
+		<aero>X100-1</aero>
+
+		<model>
+			<path>Aircraft/X100/Models/X100.xml</path>
+			<X100>
+				<smoke-trail type="bool">false</smoke-trail>
+			</X100>
+		</model>
+		
+		<systems>
+			<autopilot>
+				<path>Aircraft/X100/Systems/autopilot.xml</path>
+			</autopilot>
+		</systems> 
+		
+		<view n="101">
+			<name>Camera</name>
+			<type>lookfrom</type>
+			<internal type="bool">true</internal>
+			<config>
+				<from-model type="bool">true</from-model>
+				<x-offset-m type="double">0.02</x-offset-m>
+				<y-offset-m type="double">-0.046</y-offset-m>
+				<z-offset-m type="double">-0.147</z-offset-m>
+				<pitch-offset-deg>-90</pitch-offset-deg>
+			</config>
+			<dynamic>
+				<enabled type="bool">false</enabled>
+			</dynamic>
+		</view>
+		
+		<chase-distance-m type="double" archive="y">-5.0</chase-distance-m>
+		
+		<hud>
+			<enable3d n="1">false</enable3d>
+		</hud>
+		
+		<menubar>
+			<default>
+				<menu n="10">
+					<label>Gatewing X100</label>
+					<enabled type="bool">true</enabled>
+
+					<item>
+						<label>Toggle smoke trail</label>
+						<binding>
+							<command>property-toggle</command>
+							<property>/sim/model/X100/smoke-trail</property>
+						</binding>
+					</item>
+					<item>
+						<label>Operate catapult</label>
+						<binding>
+							<command>nasal</command>
+							<script>
+								x100.launchCatapult();
+							</script>
+						</binding>
+					</item>
+					<item>
+						<label>Reload autopilot</label>
+						<binding>
+							<command>nasal</command>
+							<script>
+								fgcommand('reinit', props.Node.new({ subsystem: "xml-autopilot" }));
+								print("xml-autopilot reinitialized!");
+							</script>
+						</binding>
+					</item>
+				</menu>
+			</default>
+		</menubar>
+	
+		<help>
+			<title>Gatewing X100</title>
+
+			<key>
+				<name>Click</name>
+				<desc>Re-position catapult</desc>
+			</key>
+			<key>
+				<name>Ctrl-click</name>
+				<desc>Start wild fire</desc>
+			</key>
+		</help>
+
+	</sim>
+
+	<nasal>
+		<x100>
+			<file>Aircraft/X100/Nasal/catapult.nas</file>
+		</x100>
+	</nasal>
+	
+</PropertyList>
