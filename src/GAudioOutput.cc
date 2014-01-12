@@ -52,8 +52,8 @@ This file is part of the QGROUNDCONTROL project
 
 #ifdef Q_OS_LINUX
 extern "C" {
-#include <flite/flite.h>
-    cst_voice *register_cmu_us_kal(const char *voxdir);
+//#include <flite/flite.h>
+//    cst_voice *register_cmu_us_kal(const char *voxdir);
 };
 #endif
 
@@ -97,7 +97,7 @@ GAudioOutput::GAudioOutput(QObject *parent) : QObject(parent),
 
 
 #ifdef Q_OS_LINUX
-    flite_init();
+//    flite_init();
 #endif
 
 #if _MSC_VER
@@ -206,19 +206,19 @@ bool GAudioOutput::say(QString text, int severity)
 #endif
 
 #ifdef Q_OS_LINUX
-            QTemporaryFile file;
-            file.setFileTemplate("XXXXXX.wav");
-
-            if (file.open())
-            {
-                cst_voice *v = register_cmu_us_kal(NULL);
-                cst_wave *wav = flite_text_to_wave(text.toStdString().c_str(), v);
-                // file.fileName() returns the unique file name
-                cst_wave_save(wav, file.fileName().toStdString().c_str(), "riff");
-                m_media->setCurrentSource(Phonon::MediaSource(QUrl::fromLocalFile(file.fileName().toStdString().c_str())));
-                m_media->play();
-                res = true;
-            }
+//            QTemporaryFile file;
+//            file.setFileTemplate("XXXXXX.wav");
+//
+//            if (file.open())
+//            {
+//                cst_voice *v = register_cmu_us_kal(NULL);
+//                cst_wave *wav = flite_text_to_wave(text.toStdString().c_str(), v);
+//                // file.fileName() returns the unique file name
+//                cst_wave_save(wav, file.fileName().toStdString().c_str(), "riff");
+//                m_media->setCurrentSource(Phonon::MediaSource(QUrl::fromLocalFile(file.fileName().toStdString().c_str())));
+//                m_media->play();
+//                res = true;
+//            }
 
 #endif
 

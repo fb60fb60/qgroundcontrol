@@ -468,9 +468,9 @@ WindowsBuild {
 
 LinuxBuild {
 	LIBS += \
-		-lflite_cmu_us_kal \
-		-lflite_usenglish \
-		-lflite_cmulex \
-		-lflite
+#		-lflite_cmu_us_kal \
+#		-lflite_usenglish \
+#		-lflite_cmulex \
+#		-lflite
 }
 
