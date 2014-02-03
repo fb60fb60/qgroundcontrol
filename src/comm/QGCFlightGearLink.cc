@@ -540,7 +540,7 @@ bool QGCFlightGearLink::connectSimulation()
 
     /*Prepare FlightGear Arguments */
     //flightGearArguments << QString("--fg-root=%1").arg(fgRoot);
-    flightGearArguments << QString("--fg-scenery=%1:%2").arg(terraSyncScenery); //according to http://wiki.flightgear.org/TerraSync a separate directory is used
+    flightGearArguments << QString("--fg-scenery=%1").arg(terraSyncScenery); //according to http://wiki.flightgear.org/TerraSync a separate directory is used
     flightGearArguments << QString("--fg-aircraft=%1").arg(fgAircraft);
     if (mav->getSystemType() == MAV_TYPE_QUADROTOR)
     {
