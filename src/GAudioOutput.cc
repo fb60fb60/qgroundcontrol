@@ -35,6 +35,7 @@ This file is part of the QGROUNDCONTROL project
 #include <QTemporaryFile>
 #include "GAudioOutput.h"
 #include "MG.h"
+#include <QLocale>
 
 #include <QDebug>
 
@@ -98,9 +99,15 @@ GAudioOutput::GAudioOutput(QObject *parent) : QObject(parent),
 #if defined Q_OS_LINUX && defined QGC_SPEECH_ENABLED
     espeak_Initialize(AUDIO_OUTPUT_PLAYBACK, 500, NULL, 0); // initialize for playback with 500ms buffer and no options (see speak_lib.h)
     espeak_VOICE espeak_voice = {};
-    espeak_voice.languages = "en-uk"; // Default to British English
-    espeak_voice.name = "klatt"; // espeak voice name
-    espeak_voice.gender = 2; // Female
+    QLocale locale;
+    localeString = locale.bcp47Name().toLower().toUtf8().constData();;
+    if (locale.bcp47Name().toLower().startsWith("en")) // only use locale for setting the voice accent if it is an english accent, otherwise use default accent of eSpeak
+    {
+        espeak_voice.languages =  localeString;// use voice output with accent of locale setting of the system
+        qDebug() << "eSpeak using" << QString(espeak_voice.languages) << "locale";
+    }
+    espeak_voice.name = "klatt"; // selecting a nice voice
+    espeak_voice.gender = 2; // set voice to female
     espeak_SetVoiceByProperties(&espeak_voice);
 #endif
 
