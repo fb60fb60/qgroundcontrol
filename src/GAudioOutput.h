@@ -112,7 +112,7 @@ protected:
     //NSSpeechSynthesizer
 #endif
 #if defined Q_OS_LINUX && defined QGC_SPEECH_ENABLED
-    //cst_voice* voice; ///< The flite voice object
+    const char *localeString; ///< holds the locale (e.g. "en-gb") to use as accent setting for eSpeak
 #endif
 #if defined _MSC_VER && defined QGC_SPEECH_ENABLED
     static ISpVoice *pVoice;
