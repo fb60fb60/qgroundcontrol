@@ -433,7 +433,7 @@ void QGCFlightGearLink::readBytes()
         // Send Optical Flow message. For now we set the flow quality to 0 and just write the ground_distance field
         float distanceMeasurement = (float)(1.0/cosPhi * 1.0/cosThe * alt_agl); //asuming planar ground
         emit sensorHilOpticalFlowChanged(QGC::groundTimeUsecs(), 0, 0, 0.0f,
-                                         0.0f, 0.0f);
+                                         0.0f, 0);
     } else {
         emit hilStateChanged(QGC::groundTimeUsecs(), roll, pitch, yaw, rollspeed,
                          pitchspeed, yawspeed, lat, lon, alt,
