@@ -167,8 +167,8 @@ public slots:
     virtual void sendHilGps(quint64 time_us, double lat, double lon, double alt, int fix_type, float eph, float epv, float vel, float vn, float ve, float vd, float cog, int satellites)
         { Q_UNUSED(time_us); Q_UNUSED(lat); Q_UNUSED(lon); Q_UNUSED(alt); Q_UNUSED(fix_type); Q_UNUSED(eph); Q_UNUSED(epv); Q_UNUSED(vel); Q_UNUSED(vn); Q_UNUSED(ve); Q_UNUSED(vd); Q_UNUSED(cog); Q_UNUSED(satellites); Q_ASSERT(false); };
     virtual void sendHilOpticalFlow(quint64 time_us, qint16 flow_x, qint16 flow_y, float flow_comp_m_x,
-                            float flow_comp_m_y, quint8 quality, float ground_distance)
-    { Q_UNUSED(time_us); Q_UNUSED(flow_x); Q_UNUSED(flow_y); Q_UNUSED(flow_comp_m_x); Q_UNUSED(flow_comp_m_y); Q_UNUSED(quality); Q_UNUSED(ground_distance);};
+                            float flow_comp_m_y, quint8 quality)
+    { Q_UNUSED(time_us); Q_UNUSED(flow_x); Q_UNUSED(flow_y); Q_UNUSED(flow_comp_m_x); Q_UNUSED(flow_comp_m_y); Q_UNUSED(quality);};
     
     virtual bool isRotaryWing() { Q_ASSERT(false); return false; }
     virtual bool isFixedWing() { Q_ASSERT(false); return false; }

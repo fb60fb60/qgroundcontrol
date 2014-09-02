@@ -99,7 +99,7 @@ void QGCFlightGearLink::run()
             mav, SLOT(sendHilGps(quint64, double, double, double, int, float, float, float, float, float, float, float, int)));
     connect(this, SIGNAL(sensorHilRawImuChanged(quint64,float,float,float,float,float,float,float,float,float,float,float,float,float,quint32)),
             mav, SLOT(sendHilSensors(quint64,float,float,float,float,float,float,float,float,float,float,float,float,float,quint32)));
-    _opticalFlowChangedConnection = connect(this, &QGCFlightGearLink::sensorHilOpticalFlowChanged, mav, &UASInterface::sendHilOpticalFlow);
+    _opticalFlowChangedConnection = connect(this, &QGCFlightGearLink::sensorHilOpticalFlowChanged, (UAS*)mav, &UAS::sendHilOpticalFlow);
     
     // Start a new QProcess to run FlightGear in
     _fgProcess = new QProcess(this);
@@ -433,7 +433,7 @@ void QGCFlightGearLink::readBytes()
         // Send Optical Flow message. For now we set the flow quality to 0 and just write the ground_distance field
         float distanceMeasurement = (float)(1.0/cosPhi * 1.0/cosThe * alt_agl); //asuming planar ground
         emit sensorHilOpticalFlowChanged(QGC::groundTimeUsecs(), 0, 0, 0.0f,
-                                         0.0f, 0.0f, distanceMeasurement);
+                                         0.0f, 0.0f);
     } else {
         emit hilStateChanged(QGC::groundTimeUsecs(), roll, pitch, yaw, rollspeed,
                          pitchspeed, yawspeed, lat, lon, alt,
