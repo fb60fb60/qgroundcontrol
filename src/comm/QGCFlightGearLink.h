@@ -164,6 +164,7 @@ private:
 
     QUdpSocket* _udpCommSocket;             ///< UDP communication sockect between FG and QGC
     QProcess*   _fgProcess;                 ///< FlightGear process
+    QMetaObject::Connection  _opticalFlowChangedConnection; ///< Stores connection for opticalFlowChanged signal
 };
 
 #endif // QGCFLIGHTGEARLINK_H
