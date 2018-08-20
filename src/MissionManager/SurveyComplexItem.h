@@ -116,7 +116,7 @@ private:
     // Decompose polygon into list of convex sub polygons
     void _PolygonDecomposeConvex(const QPolygonF& polygon, QList<QPolygonF>& decomposedPolygons);
     // return true if vertex a can see vertex b
-    bool _VertexCanSeeOther(const QPolygonF& polygon, const QPointF* VertexA, const QPointF* VertexB);
+    bool _VertexCanSeeOther(const QPolygonF& polygon, const QPointF* vertexA, const QPointF* vertexB);
 
     QMap<QString, FactMetaData*> _metaDataMap;
 
