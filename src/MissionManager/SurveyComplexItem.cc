@@ -1119,75 +1119,109 @@ void SurveyComplexItem::_rebuildTransectsPhase1Worker(bool refly)
     _PolygonDecomposeConvex(polygon, polygons);
 
     // iterate over polygons
-    for (auto& p : polygons) {
+    for (auto p = polygons.begin(); p != polygons.end(); ++p) {
+        QPointF* vMatch = nullptr;
+        // find matching vertex in previous polygon
+        if (p != polygons.begin()) {
+            auto pLast = p - 1;
+            for (auto& i : *p) {
+                for (auto& j : *pLast) {
+                   if (i == j) {
+                       vMatch = &i;
+                       break;
+                   }
+                   if (vMatch) break;
+                }
+            }
+
+        }
+
+
         // close polygon
-        p << p.front();
+        *p << p->front();
         // build transects for this polygon
-        // TODO figure out tangent origin
-        qCDebug(SurveyComplexItemLog) << "Transects from polynom p " << p;
-        _rebuildTranscetsFromPolygon(refly, p, tangentOrigin);
+        _rebuildTranscetsFromPolygon(refly, *p, tangentOrigin, vMatch);
     }
 }
 
 void SurveyComplexItem::_PolygonDecomposeConvex(const QPolygonF& polygon, QList<QPolygonF>& decomposedPolygons)
 {
-    qCDebug(SurveyComplexItemLog) << "_PolygonDecomposeConvex polygon.size() " << polygon.size();
-    if (polygon.size() < 3) return;
-
     int decompSize = std::numeric_limits<int>::max();
+    if (polygon.size() < 3) return;
+    if (polygon.size() == 3) {
+        decomposedPolygons << polygon;
+        return;
+    }
+
     QList<QPolygonF> decomposedPolygonsMin{};
 
     for (auto vertex = polygon.begin(); vertex != polygon.end(); ++vertex)
     {
         // is vertex reflex?
-        auto vertexBefore = vertex == polygon.begin() ? polygon.end() - 1 : vertex - 1;
-        auto vertexAfter = vertex == polygon.end() -1 ? polygon.begin() : vertex + 1;
-        auto area = (((vertex->x() - vertexBefore->x())*(vertexAfter->y() - vertexBefore->y()))-((vertexAfter->x() - vertexBefore->x())*(vertex->y() - vertexBefore->y())));
-        bool vertexIsReflex = area > 0;
-        qCDebug(SurveyComplexItemLog) << "area " << area << " vertexIsReflex " << vertexIsReflex;
+        bool vertexIsReflex = _VertexIsReflex(polygon, vertex);
 
         if (!vertexIsReflex) continue;
 
         for (auto vertexOther = polygon.begin(); vertexOther != polygon.end(); ++vertexOther)
         {
+            auto vertexBefore = vertex == polygon.begin() ? polygon.end() - 1 : vertex - 1;
+            auto vertexAfter = vertex == polygon.end() - 1 ? polygon.begin() : vertex + 1;
             if (vertexOther == vertex) continue;
+            if (vertexAfter == vertexOther) continue;
+            if (vertexBefore == vertexOther) continue;
             bool canSee = _VertexCanSeeOther(polygon, vertex, vertexOther);
             if (!canSee) continue;
 
             QPolygonF polyLeft;
             auto v = vertex;
+            auto polyLeftContainsReflex = false;
             while ( v != vertexOther) {
+                if (v != vertex && _VertexIsReflex(polygon, v)) {
+                    polyLeftContainsReflex = true;
+                }
                 polyLeft << *v;
                 ++v;
                 if (v == polygon.end()) v = polygon.begin();
             }
             polyLeft << *vertexOther;
-            qCDebug(SurveyComplexItemLog) << "polyLeft.size() " << polyLeft.size();
+            auto polyLeftValid = !(polyLeftContainsReflex && polyLeft.size() == 3);
 
             QPolygonF polyRight;
             v = vertexOther;
+            auto polyRightContainsReflex = false;
             while ( v != vertex) {
+                if (v != vertex && _VertexIsReflex(polygon, v)) {
+                    polyRightContainsReflex = true;
+                }
                 polyRight << *v;
                 ++v;
                 if (v == polygon.end()) v = polygon.begin();
             }
             polyRight << *vertex;
-            qCDebug(SurveyComplexItemLog) << "polyRight.size() " << polyRight.size();
+            auto polyRightValid = !(polyRightContainsReflex && polyRight.size() == 3);
+
+            if (!polyLeftValid || ! polyRightValid) {
+                continue;
+            }
 
             // recursion
             QList<QPolygonF> polyLeftDecomposed{};
             _PolygonDecomposeConvex(polyLeft, polyLeftDecomposed);
+
             QList<QPolygonF> polyRightDecomposed{};
             _PolygonDecomposeConvex(polyRight, polyRightDecomposed);
 
             // compositon
-            if (polyLeftDecomposed.size() + polyRightDecomposed.size() < decompSize) {
-                decompSize = polyLeftDecomposed.size() + polyRightDecomposed.size();
-                decomposedPolygonsMin = polyLeftDecomposed + polyRightDecomposed;
-                qCDebug(SurveyComplexItemLog) << "changing decomposedPolygonsMin";
+            auto subSize = polyLeftDecomposed.size() + polyRightDecomposed.size();
+            if ((polyLeftContainsReflex && polyLeftDecomposed.size() == 1)
+                    || (polyRightContainsReflex && polyRightDecomposed.size() == 1))
+            {
+                // don't accept polygons that contian reflex vertices and were not split
+                subSize = std::numeric_limits<int>::max();
             }
-            else {
-                qCDebug(SurveyComplexItemLog) << "NOT changing decomposedPolygonsMin";
+            if (subSize < decompSize) {
+                decompSize = subSize;
+                decomposedPolygonsMin = polyLeftDecomposed + polyRightDecomposed;
             }
         }
 
@@ -1195,23 +1229,61 @@ void SurveyComplexItem::_PolygonDecomposeConvex(const QPolygonF& polygon, QList<
 
     // assemble output
     if (decomposedPolygonsMin.size() > 0) {
-        qCDebug(SurveyComplexItemLog) << "use decomposed polygon, decomposedPolygonsMin.size() " << decomposedPolygonsMin.size();
         decomposedPolygons << decomposedPolygonsMin;
     } else {
-        qCDebug(SurveyComplexItemLog) << "use default polygon";
         decomposedPolygons << polygon;
     }
+
+    return;
 }
 
-bool SurveyComplexItem::_VertexCanSeeOther(const QPolygonF& polygon, const QPointF* VertexA, const QPointF* VertexB) {
-    if (VertexA == VertexB) return false;
-    if (VertexA + 1 == VertexB) return false;
-    if (VertexA - 1 == VertexB) return false;
+bool SurveyComplexItem::_VertexCanSeeOther(const QPolygonF& polygon, const QPointF* vertexA, const QPointF* vertexB) {
+    if (vertexA == vertexB) return false;
+    auto vertexAAfter = vertexA + 1 == polygon.end() ? polygon.begin() : vertexA + 1;
+    auto vertexABefore = vertexA == polygon.begin() ? polygon.end() - 1 : vertexA - 1;
+    if (vertexAAfter == vertexB) return false;
+    if (vertexABefore == vertexB) return false;
 
-    return true;
+    bool visible = true;
+    QLineF lineAB{*vertexA, *vertexB};
+    auto distanceAB = lineAB.length();//sqrtf(diff.x() * diff.x() + diff.y()*diff.y());
+
+    for (auto vertexC = polygon.begin(); vertexC != polygon.end(); ++vertexC)
+    {
+        if (vertexC == vertexA) continue;
+        if (vertexC == vertexB) continue;
+        auto vertexD = vertexC + 1 == polygon.end() ? polygon.begin() : vertexC + 1;
+        if (vertexD == vertexA) continue;
+        if (vertexD == vertexB) continue;
+        QLineF lineCD(*vertexC, *vertexD);
+        QPointF intersection{};
+        auto intersects = lineAB.intersect(lineCD, &intersection);
+        if (intersects == QLineF::IntersectType::BoundedIntersection) {
+
+            QLineF lineIntersection{*vertexA, intersection};
+            auto distanceIntersection = lineIntersection.length();//sqrtf(diff.x() * diff.x() + diff.y()*diff.y());
+            qCDebug(SurveyComplexItemLog) << "_VertexCanSeeOther distanceIntersection " << distanceIntersection;
+            if (distanceIntersection < distanceAB) {
+                visible = false;
+                break;
+            }
+        }
+
+    }
+
+    return visible;
 }
 
-void SurveyComplexItem::_rebuildTranscetsFromPolygon(bool refly, const QPolygonF& polygon, const QGeoCoordinate& tangentOrigin)
+bool SurveyComplexItem::_VertexIsReflex(const QPolygonF& polygon, const QPointF* vertex) {
+    auto vertexBefore = vertex == polygon.begin() ? polygon.end() - 1 : vertex - 1;
+    auto vertexAfter = vertex == polygon.end() - 1 ? polygon.begin() : vertex + 1;
+    auto area = (((vertex->x() - vertexBefore->x())*(vertexAfter->y() - vertexBefore->y()))-((vertexAfter->x() - vertexBefore->x())*(vertex->y() - vertexBefore->y())));
+    return area > 0;
+
+}
+
+
+void SurveyComplexItem::_rebuildTranscetsFromPolygon(bool refly, const QPolygonF& polygon, const QGeoCoordinate& tangentOrigin, const QPointF* const transitionPoint)
 {
     // Generate transects
 
@@ -1282,9 +1354,10 @@ void SurveyComplexItem::_rebuildTranscetsFromPolygon(bool refly, const QPolygonF
 
     // Convert from NED to Geo
     QList<QList<QGeoCoordinate>> transects;
+
     foreach (const QLineF& line, resultLines) {
-        QGeoCoordinate          coord;
         QList<QGeoCoordinate>   transect;
+        QGeoCoordinate          coord;
 
         convertNedToGeo(line.p1().y(), line.p1().x(), 0, tangentOrigin, &coord);
         transect.append(coord);
@@ -1333,6 +1406,9 @@ void SurveyComplexItem::_rebuildTranscetsFromPolygon(bool refly, const QPolygonF
         transects[i] = transectVertices;
     }
 
+
+
+
     // Convert to CoordInfo transects and append to _transects
     foreach (const QList<QGeoCoordinate>& transect, transects) {
         QGeoCoordinate                                  coord;
@@ -1377,6 +1453,17 @@ void SurveyComplexItem::_rebuildTranscetsFromPolygon(bool refly, const QPolygonF
             coordInfoTransect.append(coordInfo);
         }
 
+        _transects.append(coordInfoTransect);
+    }
+
+    if (transitionPoint != nullptr) {
+        QList<QGeoCoordinate>   transect;
+        QGeoCoordinate          coord;
+        convertNedToGeo(transitionPoint->y(), transitionPoint->x(), 0, tangentOrigin, &coord);
+        TransectStyleComplexItem::CoordInfo_t           coordInfo;
+        coordInfo = { coord, CoordTypeSurveyEdge };
+        QList<TransectStyleComplexItem::CoordInfo_t>    coordInfoTransect;
+        coordInfoTransect.append(coordInfo);
         _transects.append(coordInfoTransect);
     }
     qCDebug(SurveyComplexItemLog) << "_transects.size() " << _transects.size();
