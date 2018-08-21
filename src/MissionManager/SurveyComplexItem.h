@@ -114,7 +114,7 @@ private:
     /// Adds to the _transects array from one polygon
     void _rebuildTranscetsFromPolygon(bool refly, const QPolygonF& polygon, const QGeoCoordinate& tangentOrigin);
     // Decompose polygon into list of convex sub polygons
-    int _PolygonDecomposeConvex(const QPolygonF& polygon, QList<QPolygonF>& decomposedPolygons);
+    void _PolygonDecomposeConvex(const QPolygonF& polygon, QList<QPolygonF>& decomposedPolygons);
     // return true if vertex a can see vertex b
     bool _VertexCanSeeOther(const QPolygonF& polygon, const QPointF* vertexA, const QPointF* vertexB);
     bool _VertexIsReflex(const QPolygonF& polygon, const QPointF* vertex);
