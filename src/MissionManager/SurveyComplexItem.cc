@@ -1202,12 +1202,19 @@ void SurveyComplexItem::_PolygonDecomposeConvex(const QPolygonF& polygon, QList<
             QList<QPolygonF> polyLeftDecomposed{};
             qCDebug(PolygonDecomposeLog) << " polyLeft "<< polyLeft;
             _PolygonDecomposeConvex(polyLeft, polyLeftDecomposed);
+
             QList<QPolygonF> polyRightDecomposed{};
             qCDebug(PolygonDecomposeLog) << " polyRight "<< polyRight;
             _PolygonDecomposeConvex(polyRight, polyRightDecomposed);
 
             // compositon
             auto subSize = polyLeftDecomposed.size() + polyRightDecomposed.size();
+            if ((polyLeftContainsReflex && polyLeftDecomposed.size() == 1)
+                    || (polyRightContainsReflex && polyRightDecomposed.size() == 1))
+            {
+                // don't accept polygons that contian reflex vertices and were not split
+                subSize = std::numeric_limits<int>::max();
+            }
             if (subSize < decompSize) {
                 decompSize = subSize;
                 decomposedPolygonsMin = polyLeftDecomposed + polyRightDecomposed;
