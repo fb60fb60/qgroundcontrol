@@ -1122,14 +1122,32 @@ void SurveyComplexItem::_rebuildTransectsPhase1Worker(bool refly)
     qCDebug(PolygonDecomposeLog) << "polygons.size() " << polygons.size() ;
 
     // iterate over polygons
-    for (auto& p : polygons) {
+    for (auto p = polygons.begin(); p != polygons.end(); ++p) {
+        QPointF* vMatch = nullptr;
+        // find matching vertex in previous polygon
+        if (p != polygons.begin()) {
+            auto pLast = p - 1;
+            for (auto& i : *p) {
+                for (auto& j : *pLast) {
+                   if (i == j) {
+                       vMatch = &i;
+                       break;
+                   }
+                   if (vMatch) break;
+                }
+            }
+            if (nullptr == vMatch) qCDebug(PolygonDecomposeLog) << "no match found";
+
+        }
+
+
         // close polygon
-        p << p.front();
+        *p << p->front();
         // build transects for this polygon
         // TODO figure out tangent origin
         // TODO improve selection of entry points
 //        qCDebug(SurveyComplexItemLog) << "Transects from polynom p " << p;
-        _rebuildTranscetsFromPolygon(refly, p, tangentOrigin);
+        _rebuildTranscetsFromPolygon(refly, *p, tangentOrigin, vMatch);
     }
 }
 
@@ -1140,7 +1158,7 @@ void SurveyComplexItem::_PolygonDecomposeConvex(const QPolygonF& polygon, QList<
     if (polygon.size() < 3) return;
     if (polygon.size() == 3) {
         decomposedPolygons << polygon;
-        qCDebug(PolygonDecomposeLog) << polygon << " polygon of 3";
+//        qCDebug(PolygonDecomposeLog) << polygon << " polygon of 3";
         return;
     }
 
@@ -1200,11 +1218,11 @@ void SurveyComplexItem::_PolygonDecomposeConvex(const QPolygonF& polygon, QList<
 
             // recursion
             QList<QPolygonF> polyLeftDecomposed{};
-            qCDebug(PolygonDecomposeLog) << " polyLeft "<< polyLeft;
+//            qCDebug(PolygonDecomposeLog) << " polyLeft "<< polyLeft;
             _PolygonDecomposeConvex(polyLeft, polyLeftDecomposed);
 
             QList<QPolygonF> polyRightDecomposed{};
-            qCDebug(PolygonDecomposeLog) << " polyRight "<< polyRight;
+//            qCDebug(PolygonDecomposeLog) << " polyRight "<< polyRight;
             _PolygonDecomposeConvex(polyRight, polyRightDecomposed);
 
             // compositon
@@ -1234,11 +1252,11 @@ void SurveyComplexItem::_PolygonDecomposeConvex(const QPolygonF& polygon, QList<
     if (decomposedPolygonsMin.size() > 0) {
 //        qCDebug(SurveyComplexItemLog) << "use decomposed polygon, decomposedPolygonsMin.size() " << decomposedPolygonsMin.size();
         decomposedPolygons << decomposedPolygonsMin;
-        qCDebug(PolygonDecomposeLog) << decomposedPolygonsMin;
+//        qCDebug(PolygonDecomposeLog) << decomposedPolygonsMin;
     } else {
 //        qCDebug(SurveyComplexItemLog) << "use default polygon";
         decomposedPolygons << polygon;
-        qCDebug(PolygonDecomposeLog) << polygon << " empty polygon";
+//        qCDebug(PolygonDecomposeLog) << polygon << " empty polygon";
     }
 
     return;
@@ -1296,7 +1314,7 @@ bool SurveyComplexItem::_VertexIsReflex(const QPolygonF& polygon, const QPointF*
 }
 
 
-void SurveyComplexItem::_rebuildTranscetsFromPolygon(bool refly, const QPolygonF& polygon, const QGeoCoordinate& tangentOrigin)
+void SurveyComplexItem::_rebuildTranscetsFromPolygon(bool refly, const QPolygonF& polygon, const QGeoCoordinate& tangentOrigin, const QPointF* const transitionPoint)
 {
     // Generate transects
 
@@ -1367,9 +1385,19 @@ void SurveyComplexItem::_rebuildTranscetsFromPolygon(bool refly, const QPolygonF
 
     // Convert from NED to Geo
     QList<QList<QGeoCoordinate>> transects;
-    foreach (const QLineF& line, resultLines) {
-        QGeoCoordinate          coord;
+
+    if (transitionPoint != nullptr) {
         QList<QGeoCoordinate>   transect;
+        QGeoCoordinate          coord;
+        convertNedToGeo(transitionPoint->y(), transitionPoint->x(), 0, tangentOrigin, &coord);
+        transect.append(coord);
+        transect.append(coord); //TODO
+        transects.append(transect);
+    }
+
+    foreach (const QLineF& line, resultLines) {
+        QList<QGeoCoordinate>   transect;
+        QGeoCoordinate          coord;
 
         convertNedToGeo(line.p1().y(), line.p1().x(), 0, tangentOrigin, &coord);
         transect.append(coord);
