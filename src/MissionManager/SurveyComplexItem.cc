@@ -1386,15 +1386,6 @@ void SurveyComplexItem::_rebuildTranscetsFromPolygon(bool refly, const QPolygonF
     // Convert from NED to Geo
     QList<QList<QGeoCoordinate>> transects;
 
-    if (transitionPoint != nullptr) {
-        QList<QGeoCoordinate>   transect;
-        QGeoCoordinate          coord;
-        convertNedToGeo(transitionPoint->y(), transitionPoint->x(), 0, tangentOrigin, &coord);
-        transect.append(coord);
-        transect.append(coord); //TODO
-        transects.append(transect);
-    }
-
     foreach (const QLineF& line, resultLines) {
         QList<QGeoCoordinate>   transect;
         QGeoCoordinate          coord;
@@ -1446,6 +1437,9 @@ void SurveyComplexItem::_rebuildTranscetsFromPolygon(bool refly, const QPolygonF
         transects[i] = transectVertices;
     }
 
+
+
+
     // Convert to CoordInfo transects and append to _transects
     foreach (const QList<QGeoCoordinate>& transect, transects) {
         QGeoCoordinate                                  coord;
@@ -1490,6 +1484,17 @@ void SurveyComplexItem::_rebuildTranscetsFromPolygon(bool refly, const QPolygonF
             coordInfoTransect.append(coordInfo);
         }
 
+        _transects.append(coordInfoTransect);
+    }
+
+    if (transitionPoint != nullptr) {
+        QList<QGeoCoordinate>   transect;
+        QGeoCoordinate          coord;
+        convertNedToGeo(transitionPoint->y(), transitionPoint->x(), 0, tangentOrigin, &coord);
+        TransectStyleComplexItem::CoordInfo_t           coordInfo;
+        coordInfo = { coord, CoordTypeSurveyEdge };
+        QList<TransectStyleComplexItem::CoordInfo_t>    coordInfoTransect;
+        coordInfoTransect.append(coordInfo);
         _transects.append(coordInfoTransect);
     }
     qCDebug(SurveyComplexItemLog) << "_transects.size() " << _transects.size();
