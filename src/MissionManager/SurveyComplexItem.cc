@@ -20,6 +20,7 @@
 #include <QPolygonF>
 
 QGC_LOGGING_CATEGORY(SurveyComplexItemLog, "SurveyComplexItemLog")
+QGC_LOGGING_CATEGORY(KMLImport, "KMLImport")
 
 const char* SurveyComplexItem::jsonComplexItemTypeValue =   "survey";
 const char* SurveyComplexItem::jsonV3ComplexItemTypeValue = "survey";
@@ -1097,6 +1098,7 @@ void SurveyComplexItem::_rebuildTransectsPhase1Worker(bool refly)
     for (int i=0; i<_surveyAreaPolygon.count(); i++) {
         double y, x, down;
         QGeoCoordinate vertex = _surveyAreaPolygon.pathModel().value<QGCQGeoCoordinate*>(i)->coordinate();
+        qCDebug(KMLImport) << "worker1       vertex" << vertex;
         if (i == 0) {
             // This avoids a nan calculation that comes out of convertGeoToNed
             x = y = 0;
@@ -1106,6 +1108,7 @@ void SurveyComplexItem::_rebuildTransectsPhase1Worker(bool refly)
         polygonPoints += QPointF(x, y);
         qCDebug(SurveyComplexItemLog) << "_rebuildTransectsPhase1 vertex:x:y" << vertex << polygonPoints.last().x() << polygonPoints.last().y();
     }
+//    qCDebug(KMLImport) << "polygonPoints " << polygonPoints;  //looks good here
 
     // Generate transects
 
@@ -1127,13 +1130,14 @@ void SurveyComplexItem::_rebuildTransectsPhase1Worker(bool refly)
         polygon << polygonPoints[i];
     }
     polygon << polygonPoints[0];
+//    qCDebug(KMLImport) << "polygon " << polygon; // looks good here
     QRectF boundingRect = polygon.boundingRect();
     QPointF boundingCenter = boundingRect.center();
     qCDebug(SurveyComplexItemLog) << "Bounding rect" << boundingRect.topLeft().x() << boundingRect.topLeft().y() << boundingRect.bottomRight().x() << boundingRect.bottomRight().y();
 
     // Create set of rotated parallel lines within the expanded bounding rect. Make the lines larger than the
     // bounding box to guarantee intersection.
-
+#if 0
     QList<QLineF> lineList;
 
     // Transects are generated to be as long as the largest width/height of the bounding rect plus some fudge factor.
@@ -1279,6 +1283,8 @@ void SurveyComplexItem::_rebuildTransectsPhase1Worker(bool refly)
 
         _transects.append(coordInfoTransect);
     }
+
+#endif // if 0  // KMLImport
 }
 
 void SurveyComplexItem::_rebuildTransectsPhase2(void)

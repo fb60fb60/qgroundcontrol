@@ -21,6 +21,8 @@
 #include <QFile>
 #include <QDomDocument>
 
+QGC_LOGGING_CATEGORY(MapPoly, "MapPoly")
+
 const char* QGCMapPolygon::jsonPolygonKey = "polygon";
 
 QGCMapPolygon::QGCMapPolygon(QObject* parent)
@@ -92,12 +94,18 @@ void QGCMapPolygon::clear(void)
 void QGCMapPolygon::adjustVertex(int vertexIndex, const QGeoCoordinate coordinate)
 {
     _polygonPath[vertexIndex] = QVariant::fromValue(coordinate);
+    qCDebug(MapPoly) << "adjustVertex _polygonPath " << _polygonPath;
     if (!_centerDrag) {
         // When dragging center we don't signal path changed until add vertices are updated
         emit pathChanged();
     }
     _polygonModel.value<QGCQGeoCoordinate*>(vertexIndex)->setCoordinate(coordinate);
     setDirty(true);
+    for (int i=0; i<count(); i++) {
+        double y, x, down;
+        QGeoCoordinate vertex = pathModel().value<QGCQGeoCoordinate*>(i)->coordinate();
+        qCDebug(MapPoly) << "adjustVertex vertex" << vertex;
+    }
 }
 
 void QGCMapPolygon::setDirty(bool dirty)
@@ -464,6 +472,7 @@ bool QGCMapPolygon::loadKMLFile(const QString& kmlFile)
     clear();
     appendVertices(rgCoords);
 
+    qCDebug(MapPoly) << "loadKMLFile doe " << _polygonPath;
     return true;
 }
 
